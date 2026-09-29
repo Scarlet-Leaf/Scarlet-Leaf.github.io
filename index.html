@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amitha Mariam — Game Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #12101C;
+    --bg-panel: #1C1830;
+    --bg-panel-2: #211C38;
+    --coral: #FF7A59;
+    --mint: #7FE7CE;
+    --cream: #F3EEE3;
+    --muted: #9A91BA;
+    --line: #332C52;
+    --pixel: 'Press Start 2P', monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Sora', sans-serif;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--cream);
+    font-family: var(--body);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  a{ color: inherit; }
+
+  ::selection{ background: var(--coral); color: var(--bg); }
+
+  :focus-visible{
+    outline: 2px solid var(--mint);
+    outline-offset: 3px;
+  }
+
+  /* ---------- background texture ---------- */
+  .scanlines{
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.025) 0px,
+      rgba(255,255,255,0.025) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
+    opacity: .5;
+  }
+
+  .grid-glow{
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(600px 400px at 15% -5%, rgba(255,122,89,0.16), transparent 60%),
+      radial-gradient(700px 500px at 105% 20%, rgba(127,231,206,0.12), transparent 60%);
+  }
+
+  section, header, footer{ position: relative; z-index: 1; }
+
+  .wrap{
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(10px);
+    background: rgba(18,16,28,0.72);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar .wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .topbar .mark{
+    font-family: var(--pixel);
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--mint);
+  }
+  .topbar nav{
+    display:flex;
+    gap: 22px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .topbar nav a{
+    text-decoration:none;
+    transition: color .2s ease;
+  }
+  .topbar nav a:hover{ color: var(--coral); }
+
+  @media (max-width: 560px){
+    .topbar nav{ gap: 14px; font-size: 12px; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height: 88vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding: 90px 0 60px;
+  }
+
+  .eyebrow{
+    font-family: var(--pixel);
+    font-size: 10px;
+    color: var(--coral);
+    letter-spacing: 2px;
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    margin-bottom: 26px;
+  }
+  .eyebrow::before{
+    content:"";
+    width: 8px; height: 8px;
+    background: var(--coral);
+    display:inline-block;
+    animation: blink 1.4s steps(1) infinite;
+  }
+  @keyframes blink{ 50%{ opacity: 0; } }
+
+  .hero h1{
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 7vw, 5.2rem);
+    line-height: 1.02;
+    margin: 0 0 22px;
+    letter-spacing: -0.01em;
+  }
+  .hero h1 .last{
+    color: var(--mint);
+    display:block;
+  }
+
+  .cursor{
+    display:inline-block;
+    width: 0.5ch;
+    background: var(--coral);
+    animation: blink 1s steps(1) infinite;
+    margin-left: 4px;
+  }
+
+  .hero p.tag{
+    max-width: 560px;
+    color: var(--muted);
+    font-size: 1.08rem;
+    margin: 0 0 40px;
+  }
+  .hero p.tag strong{ color: var(--cream); font-weight: 500; }
+
+  .hero-cta{
+    display:flex;
+    align-items:center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn-start{
+    font-family: var(--pixel);
+    font-size: 12px;
+    color: var(--bg);
+    background: var(--coral);
+    border: none;
+    padding: 16px 24px;
+    cursor: pointer;
+    text-decoration: none;
+    display:inline-flex;
+    align-items:center;
+    gap: 10px;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    transition: transform .15s ease, background .2s ease;
+  }
+  .btn-start:hover{ background: var(--mint); transform: translateY(-2px); }
+
+  .hero-meta{
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .hero-meta span{ color: var(--cream); }
+
+  /* ---------- section shell ---------- */
+  .section{ padding: 90px 0; border-top: 1px solid var(--line); }
+
+  .kicker{
+    font-family: var(--pixel);
+    font-size: 10px;
+    color: var(--mint);
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+  }
+
+  .section h2{
+    font-family: var(--display);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0 0 34px;
+    font-weight: 600;
+  }
+
+  /* ---------- about ---------- */
+  .about-grid{
+    display:grid;
+    grid-template-columns: 200px 1fr;
+    gap: 50px;
+    align-items:start;
+  }
+  .avatar{
+    width: 180px;
+    height: 180px;
+    background: linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel));
+    border: 1px solid var(--line);
+    clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family: var(--pixel);
+    font-size: 42px;
+    color: var(--coral);
+  }
+  .about-body p{
+    color: var(--muted);
+    font-size: 1.02rem;
+    max-width: 60ch;
+  }
+  .about-body p strong{ color: var(--cream); font-weight: 500;}
+  .badge-row{
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 26px;
+  }
+  .badge{
+    font-size: 12px;
+    color: var(--mint);
+    border: 1px solid var(--line);
+    padding: 7px 12px;
+    background: var(--bg-panel);
+  }
+
+  @media (max-width: 640px){
+    .about-grid{ grid-template-columns: 1fr; }
+    .avatar{ width: 110px; height: 110px; font-size: 26px; }
+  }
+
+  /* ---------- skills stat sheet ---------- */
+  .stat-list{
+    display:flex;
+    flex-direction:column;
+    gap: 22px;
+    max-width: 640px;
+  }
+  .stat-row{
+    display:grid;
+    grid-template-columns: 130px 1fr 40px;
+    align-items:center;
+    gap: 16px;
+  }
+  .stat-name{
+    font-size: 14px;
+    color: var(--cream);
+  }
+  .stat-bar{
+    height: 10px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    display:flex;
+    gap: 3px;
+    padding: 2px;
+  }
+  .stat-bar span{
+    flex: 1 1 0;
+    background: transparent;
+  }
+  .stat-bar span.on{ background: var(--coral); }
+  .stat-bar.alt span.on{ background: var(--mint); }
+  .stat-pct{
+    font-size: 12px;
+    color: var(--muted);
+    text-align: right;
+    font-family: var(--pixel);
+  }
+
+  /* ---------- projects / cartridges ---------- */
+  .cart-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 26px;
+  }
+  @media (max-width: 860px){
+    .cart-grid{ grid-template-columns: 1fr; }
+  }
+
+  .cart{
+    background: linear-gradient(180deg, var(--bg-panel-2), var(--bg-panel));
+    border: 1px solid var(--line);
+    padding: 26px;
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+    display:flex;
+    flex-direction:column;
+    gap: 14px;
+    transition: transform .2s ease, border-color .2s ease;
+  }
+  .cart:hover{ transform: translateY(-4px); border-color: var(--coral); }
+
+  .cart.wip{
+    border-style: dashed;
+    background: linear-gradient(180deg, rgba(255,122,89,0.06), var(--bg-panel));
+  }
+
+  .cart-tag{
+    font-family: var(--pixel);
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--bg);
+    background: var(--mint);
+    padding: 5px 8px;
+    width: fit-content;
+  }
+  .cart.wip .cart-tag{ background: var(--coral); }
+
+  .cart h3{
+    font-family: var(--display);
+    font-size: 1.25rem;
+    margin: 0;
+    font-weight: 600;
+  }
+  .cart p{
+    color: var(--muted);
+    font-size: 0.94rem;
+    margin: 0;
+    flex-grow: 1;
+  }
+  .cart .stack{
+    display:flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .stack span{
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    padding: 4px 8px;
+  }
+
+  .progress-track{
+    height: 8px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .progress-fill{
+    height: 100%;
+    width: 55%;
+    background: repeating-linear-gradient(45deg, var(--coral), var(--coral) 6px, #E8654A 6px, #E8654A 12px);
+    animation: progress-move 1.2s linear infinite;
+  }
+  @keyframes progress-move{
+    from{ background-position: 0 0; }
+    to{ background-position: 34px 0; }
+  }
+  .progress-label{
+    font-size: 11px;
+    color: var(--coral);
+    font-family: var(--pixel);
+  }
+
+  /* ---------- exploring / achievements ---------- */
+  .achieve-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 720px){
+    .achieve-grid{ grid-template-columns: 1fr; }
+  }
+  .achieve{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+    border: 1px solid var(--line);
+    background: var(--bg-panel);
+    padding: 18px;
+  }
+  .achieve .icon{
+    width: 42px; height: 42px;
+    flex-shrink: 0;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family: var(--pixel);
+    font-size: 14px;
+    color: var(--mint);
+  }
+  .achieve h4{
+    margin: 0 0 4px;
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--cream);
+  }
+  .achieve p{
+    margin:0;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  /* ---------- hobbies ---------- */
+  .hobby-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 560px){ .hobby-grid{ grid-template-columns: 1fr; } }
+
+  .hobby{
+    border: 1px solid var(--line);
+    padding: 26px;
+    background: linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel));
+  }
+  .hobby .num{
+    font-family: var(--pixel);
+    font-size: 10px;
+    color: var(--coral);
+    margin-bottom: 10px;
+    display:block;
+  }
+  .hobby h4{
+    margin: 0 0 8px;
+    font-family: var(--display);
+    font-size: 1.2rem;
+  }
+  .hobby p{
+    margin:0;
+    color: var(--muted);
+    font-size: 0.94rem;
+  }
+
+  /* ---------- footer ---------- */
+  footer{
+    border-top: 1px solid var(--line);
+    padding: 50px 0 40px;
+  }
+  footer .wrap{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  footer .sig{
+    font-family: var(--pixel);
+    font-size: 11px;
+    color: var(--mint);
+  }
+  footer .foot-note{
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+<div class="grid-glow"></div>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="mark">AM_</span>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#exploring">Exploring</a>
+      <a href="#hobbies">Hobbies</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">NEW PLAYER JOINED</div>
+    <h1>
+      Amitha Mariam
+      <span class="last">builds worlds you can play in<span class="cursor">&nbsp;</span></span>
+    </h1>
+    <p class="tag">I'm a student at <strong>Rajagiri College of Social Sciences</strong> who spends most spare time in a game engine — designing systems, shipping small worlds, and figuring out what makes a level actually feel fun to play.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn-start">▸ PRESS START</a>
+      <div class="hero-meta">Currently building — <span>Tea House</span></div>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="about">
+  <div class="wrap">
+    <div class="kicker">01 / PLAYER PROFILE</div>
+    <h2>About</h2>
+    <div class="about-grid">
+      <div class="avatar">AM</div>
+      <div class="about-body">
+        <p>I'm <strong>Amitha Mariam</strong>, currently studying at <strong>Rajagiri College of Social Sciences</strong>. Game development is what pulls me in the most — I like the whole loop of it: designing a mechanic, breaking it, fixing it, and watching it finally click into something people want to keep playing.</p>
+        <p>Outside of coursework, I build my own projects to learn faster than a syllabus allows — from combat systems to AI-assisted tools — and I'm always mid-way through picking up one more skill that a game might need.</p>
+        <div class="badge-row">
+          <span class="badge">Game Developer</span>
+          <span class="badge">Rajagiri College of Social Sciences</span>
+          <span class="badge">Always Building Something</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="skills">
+  <div class="wrap">
+    <div class="kicker">02 / STAT SHEET</div>
+    <h2>Skills</h2>
+    <div class="stat-list">
+
+      <div class="stat-row">
+        <div class="stat-name">Python</div>
+        <div class="stat-bar">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+          <span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span>
+        </div>
+        <div class="stat-pct">80</div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-name">C++</div>
+        <div class="stat-bar alt">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+          <span class="on"></span><span class="on"></span><span></span><span></span><span></span>
+        </div>
+        <div class="stat-pct">70</div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-name">C</div>
+        <div class="stat-bar">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+          <span class="on"></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="stat-pct">60</div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-name">Unity</div>
+        <div class="stat-bar alt">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+          <span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span>
+        </div>
+        <div class="stat-pct">80</div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-name">MySQL</div>
+        <div class="stat-bar">
+          <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="stat-pct">50</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section" id="projects">
+  <div class="wrap">
+    <div class="kicker">03 / CARTRIDGE RACK</div>
+    <h2>Projects</h2>
+    <div class="cart-grid">
+
+      <div class="cart">
+        <span class="cart-tag">SHIPPED</span>
+        <h3>Tank Wars</h3>
+        <p>A tank combat game built from the ground up — movement, aiming, collision, and battle logic all designed to make each match feel tense and readable.</p>
+        <div class="stack"><span>Unity</span><span>C#</span><span>Game Design</span></div>
+      </div>
+
+      <div class="cart">
+        <span class="cart-tag">SHIPPED</span>
+        <h3>AI App Stream</h3>
+        <p>An app built around an AI-powered stream — exploring how AI tools can drive real-time content and interaction inside an application.</p>
+        <div class="stack"><span>Python</span><span>AI Tools</span></div>
+      </div>
+
+      <div class="cart wip">
+        <span class="cart-tag">IN PROGRESS</span>
+        <h3>Tea House</h3>
+        <p>A cozy, in-development game centered around running a tea house — currently in active build, from core mechanics to the feel of the space.</p>
+        <div class="progress-label">BUILDING...</div>
+        <div class="progress-track"><div class="progress-fill"></div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section" id="exploring">
+  <div class="wrap">
+    <div class="kicker">04 / NEXT LEVEL LOADING</div>
+    <h2>Currently Exploring</h2>
+    <div class="achieve-grid">
+
+      <div class="achieve">
+        <div class="icon">&lt;/&gt;</div>
+        <div>
+          <h4>HTML</h4>
+          <p>Learning to build for the web</p>
+        </div>
+      </div>
+
+      <div class="achieve">
+        <div class="icon">✎</div>
+        <div>
+          <h4>Canva</h4>
+          <p>Designing visuals & game assets</p>
+        </div>
+      </div>
+
+      <div class="achieve">
+        <div class="icon">⬡</div>
+        <div>
+          <h4>Blender</h4>
+          <p>Getting into 3D modeling</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section" id="hobbies">
+  <div class="wrap">
+    <div class="kicker">05 / OFF THE CLOCK</div>
+    <h2>Hobbies</h2>
+    <div class="hobby-grid">
+      <div class="hobby">
+        <span class="num">HOBBY_01</span>
+        <h4>Gaming</h4>
+        <p>Playing games is half of why I make them — every game I play teaches me something about pacing, feedback, and fun.</p>
+      </div>
+      <div class="hobby">
+        <span class="num">HOBBY_02</span>
+        <h4>Reading Novels</h4>
+        <p>I read for story and world-building — the same instincts I try to bring into the games I design.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="sig">AMITHA MARIAM // GAME DEVELOPER</div>
+    <div class="foot-note">Built with curiosity, one commit at a time.</div>
+  </div>
+</footer>
+
+</body>
+</html>
